@@ -34,7 +34,7 @@ import dao.DBConnectionMgr;
 import dao.LoginDao;
 import javazoom.jl.player.Player;
 
-public class LoginView extends JFrame implements Runnable, ActionListener{
+public class LoginView extends JFrame implements Runnable, ActionListener {
 	// 2차 정보 확인용
 	Connection con = null;
 	CallableStatement cstmt = null;
@@ -44,11 +44,11 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 	JLabel jlb_daoimport = new JLabel("데이터 받은 상황 :");
 	JLabel jlb_daoimportcheck = new JLabel("Not yet");
 	String nameVO = null;
-	String departmentVO= null;	
+	String departmentVO = null;
 	String genderVO = null;
 	String emailVO = null;
 	String idVO = null;
-	Map<String, Object> check_ok = new HashMap<String, Object>();	
+	public Map<String, String> check_ok = new HashMap<String, String>();
 	Map<String, Object> importkey = null;
 	// 로그인 창 관련 선언
 	LoginDao ld = null;
@@ -57,10 +57,6 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 	JLabel jlb_id = new JLabel("ID :");
 	JLabel jlb_pw = new JLabel("PW :");
 	JTextField jtf_id = new JTextField();
-	////////////////////
-	String test1 = jtf_id.getText();
-	Map<String, Object> importkey2 = check(test1);
-	////////////
 	JPasswordField jpf_pw = new JPasswordField();
 	JButton jbtn_add = new JButton("회원가입");
 	JButton jbtn_login = new JButton("로그인");
@@ -70,7 +66,6 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 	Font soundfont = new Font("맑은 고딕", Font.CENTER_BASELINE, 13);
 	String name = "";
 	String email = "";
-	
 
 	// 배경화면 관련 선언
 	String imgPath = "../project_210419/src/login/";
@@ -83,7 +78,7 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 	private Player player;
 	private Thread thread;
 	private boolean isLoop;
-	
+
 	class BackGroundPanel extends JPanel { // 배경화면을 위해서 내부에 클래스 지정
 		public void paintComponent(Graphics g) {
 			g.drawImage(imgIcon.getImage(), 0, 0, null);
@@ -92,10 +87,11 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 
 		}
 	}
-	
-	public LoginView() {}
-	
-	public LoginView(CreateAccountVO caVO){
+
+	public LoginView() {
+	}
+
+	public LoginView(CreateAccountVO caVO) {
 		this.caVO = caVO;
 	}
 
@@ -114,8 +110,6 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 		this.setResizable(false);// 크기조정 불가
 		this.setLocation(800, 250);
 
-		
-		
 		// id 부분
 		jlb_id.setBounds(48, 250, 100, 30);
 		jlb_id.setFont(font);
@@ -131,17 +125,17 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 		this.add(jpf_pw);
 
 		// 로그인
-		jbtn_login.addActionListener(this); //효과음 + 연결
+		jbtn_login.addActionListener(this); // 효과음 + 연결
 		jbtn_login.setBounds(178, 350, 120, 40);
 		jbtn_login.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		this.add(jbtn_login);
 
 		// 회원가입
-		jbtn_add.addActionListener(this); //효과음 + 연결
+		jbtn_add.addActionListener(this); // 효과음 + 연결
 		jbtn_add.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		jbtn_add.setBounds(48, 350, 120, 40);
 		this.add(jbtn_add);
-		
+
 		// 음악 정지 이벤트
 		jbtn_stop.addActionListener(action);
 		jbtn_stop.setContentAreaFilled(false);
@@ -154,37 +148,38 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 
 		// 음악 재시작 이벤트
 		jbtn_restart.addActionListener(action);
-		
-		//데이터 받은 공간 확인
-		jlb_daoimport.setBounds(75,425,150,30);
+
+		// 데이터 받은 공간 확인
+		jlb_daoimport.setBounds(75, 425, 150, 30);
 		jlb_daoimport.setFont(soundfont);
-		jlb_daoimportcheck.setBounds(200,425,60,30);
+		jlb_daoimportcheck.setBounds(200, 425, 60, 30);
 		jlb_daoimportcheck.setFont(soundfont);
 		this.add(jlb_daoimport);
 		this.add(jlb_daoimportcheck);
 		jtf_id.addKeyListener(new KeyListener() {
-			
+
 			@Override
-			public void keyTyped(KeyEvent e) {}
-			
+			public void keyTyped(KeyEvent e) {
+			}
+
 			@Override
 			public void keyReleased(KeyEvent e) {
-				String datacheck = jtf_id.getText();
-				check_ok = check(datacheck);
-				if(check_ok != null) {
+				String dataid = jtf_id.getText();
+				check_ok = check(dataid);
+				if (check_ok != null) {
 					jlb_daoimportcheck.setText("ok");
-				}else {
+				} else {
 					jlb_daoimportcheck.setText("Not yet");
 				}
 			}
 
 			@Override
-			public void keyPressed(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {
+			}
 		});
-		
-		
+
 		////// thread 선정 - JFrame에 영향을 줄 수 있는 독립적인 작업을 한다고 생각하면 좋음.
-		thread = new Thread(() -> {//ArrowFuntion(공부하기에는 안좋음)를 이용해 이 스레드는 이것만 플레이 하도록함.
+		thread = new Thread(() -> {// ArrowFuntion(공부하기에는 안좋음)를 이용해 이 스레드는 이것만 플레이 하도록함.
 			try {
 				do { // 무조건 실행하는 곳.
 					isLoop = true;
@@ -199,9 +194,10 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 			}
 		});
 		thread.start();
-		
+
 	}// end of Display();
-	//버튼 효과음 부분(thread 받는 부분)
+		// 버튼 효과음 부분(thread 받는 부분)
+
 	public void run() {
 		synchronized (jbtn_add) {
 			try {
@@ -213,13 +209,13 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}	
-	}//end of run(effect sound);
+		}
+	}// end of run(effect sound);
 
-	public Map<String, Object> check(String p_id) {
+	public Map<String, String> check(String p_id) {
 		StringBuilder sql_check = new StringBuilder();
 		sql_check.append("SELECT * From account_info");
-		sql_check.append(" WHERE id = ?");
+		sql_check.append(" WHERE id =?");
 		dbMgr = DBConnectionMgr.getInstance();
 		try {
 			con = dbMgr.getConnection();
@@ -227,27 +223,28 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 			int i = 1;
 			pstmt.setString(i++, jtf_id.getText());
 			rs = pstmt.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				String id = rs.getString("id");
 				String name = rs.getString("name");
-				String department= rs.getString("department");	
+				String department = rs.getString("department");
 				String gender = rs.getString("gender");
 				String email = rs.getString("email");
-				Map<String, Object> map = new HashMap<String, Object>();
+				Map<String, String> map = new HashMap<String, String>();
 				map.put("id", id);
 				map.put("name", name);
 				map.put("department", department);
 				map.put("gender", gender);
 				map.put("email", email);
-			return map;
+				return map;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 		} finally {
 			dbMgr.freeConnection(con, pstmt, rs);
-		} return null;
+		}
+		return null;
 	}
-	
+
 	@SuppressWarnings("deprecation") // 인터페이스를 선언해서 사용하는 것 인스턴스화 1-5의 원리를 이용한 것.
 	public ActionListener action = (ActionEvent e) -> { // ArrowFuntion - 파이선 등에서 사용하던 것을 자바에서 이용해 사용하는 것
 														// new actionListener({})의 원리, 묵시적인 것이라서 되도록이면 쓰지 말자.
@@ -283,48 +280,48 @@ public class LoginView extends JFrame implements Runnable, ActionListener{
 		LoginView lv = new LoginView();
 		lv.start();
 	}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			ld = new LoginDao();
-			if (e.getSource() == jbtn_add) {
-				Runnable addR1 = new LoginView();
-				Thread th_add = new Thread(addR1);
-				th_add.start();
-				CreateAccount ca = new CreateAccount();
-			}
-			else if (e.getSource() == jbtn_login) {
-					Runnable loginR1 = new LoginView();
-					Thread th_login = new Thread(loginR1);
-					th_login.start();
-			if("".equals(jtf_id.getText()) ||"".equals(jpf_pw.getText()) ) {
-					JOptionPane.showMessageDialog(null, "아이디와 비번을 확인해주세요.");
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		ld = new LoginDao();
+		if (e.getSource() == jbtn_add) {
+			Runnable addR1 = new LoginView();
+			Thread th_add = new Thread(addR1);
+			th_add.start();
+			CreateAccount ca = new CreateAccount();
+		} else if (e.getSource() == jbtn_login) {
+			Runnable loginR1 = new LoginView();
+			Thread th_login = new Thread(loginR1);
+			th_login.start();
+			if ("".equals(jtf_id.getText()) || "".equals(jpf_pw.getText())) {
+				JOptionPane.showMessageDialog(null, "아이디와 비번을 확인해주세요.");
+				return;
+			} // 공백 상태에서 로그인 버튼 누르면 에러 호출
+			try {
+				String p_id = jtf_id.getText(); // id 적은 문자를 문자열로 받는 것을 새로 변수선언함.
+				String p_pw = jpf_pw.getText(); // pw 적은 문자를 문자열로 받는 것을 새로 변수선언함.
+				name = ld.login(p_id, p_pw);// LoginDao에 있는 login(p_id, p_pw)메소드를 실행하고 그 값을 받음. - msg의 값을 받음.
+				if ("아이디가 존재하지 않습니다.".equals(name)) {// name(msg값을 가진)의 값이 ""와 같다면
+					JOptionPane.showMessageDialog(null, "아이디가 일치하지 않습니다.");
+					return;// 여기서 if문 끝냄. - 밑에 있는 것은 실행 안함.
+				} else if ("비밀번호가 틀립니다.".equals(name)) {
+					JOptionPane.showMessageDialog(null, "비밀번호가 일치하지 않습니다.");
 					return;
-			}//공백 상태에서 로그인 버튼 누르면 에러 호출
-				try {
-					String p_id = jtf_id.getText(); //id 적은 문자를 문자열로 받는 것을 새로 변수선언함.
-					String p_pw = jpf_pw.getText(); //pw 적은 문자를 문자열로 받는 것을 새로 변수선언함.
-					name = ld.login(p_id, p_pw);//LoginDao에 있는 login(p_id, p_pw)메소드를 실행하고 그 값을 받음. - msg의 값을 받음.
-					if("아이디가 존재하지 않습니다.".equals(name)) {//name(msg값을 가진)의 값이 ""와 같다면
-						JOptionPane.showMessageDialog(null, "아이디가 일치하지 않습니다.");
-						return;//여기서 if문 끝냄. - 밑에 있는 것은 실행 안함.
-					}else if("비밀번호가 틀립니다.".equals(name)) {
-						JOptionPane.showMessageDialog(null, "비밀번호가 일치하지 않습니다.");
-						return;							
-					}else {
-						JOptionPane.showMessageDialog(null, name+"님 환영합니다.");
-						this.setVisible(false);
-						thread.stop();
-						if("이스터에그".equals(name)) {
-							System.out.println("이스터에그 넣을거임.");
-							return;
-						} else {
-							Main80 m80 = new Main80();
-						}
+				} else {
+					JOptionPane.showMessageDialog(null, name + "님 환영합니다.");
+					this.setVisible(false);
+					thread.stop();
+					if ("이스터에그".equals(name)) {
+						System.out.println("이스터에그 넣을거임.");
+						return;
+					} else {
+						Main80 m80 = new Main80(this);
 					}
-				}catch (Exception e2) {
-					e2.printStackTrace();
 				}
-					
+			} catch (Exception e2) {
+				e2.printStackTrace();
 			}
+
 		}
 	}
+}

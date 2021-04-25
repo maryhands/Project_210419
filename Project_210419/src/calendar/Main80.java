@@ -19,22 +19,20 @@ public class Main80 extends JFrame {
    Main80Center mc = null;
    CreateAccountVO caVO = null;
    LoginDao ld = null;
-   Map<String, Object> test = null;
+   Map<String, String> callData = null;
    LoginView lv = null;
    
    public Main80(LoginView lv) {
-	   this.lv = lv;
-   }
-   
-   public Main80() {
+	  this.lv = lv;
       me = new Main80East();
       mc = new Main80Center(me);
+      callData = lv.check_ok;
       initDisplay();
    }
    private void initDisplay() {
       this.add("Center", mc);
       this.add("East", me);
-      this.setTitle(test+"님의 일정관리");
+      this.setTitle(callData.get("name")+"님의 일정관리");
       this.setSize(1200, 700);
       this.setVisible(true);
       this.setResizable(false);// 크기조정 불가
@@ -43,7 +41,7 @@ public class Main80 extends JFrame {
    }
 
    public static void main(String[] args) {
-      new Main80();
+      new Main80(null);
 
    }
 
