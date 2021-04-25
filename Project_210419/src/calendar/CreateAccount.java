@@ -70,7 +70,7 @@ public class CreateAccount extends JFrame implements ActionListener, ItemListene
 	String domain = null;
 	String address = null;
 	
-	String imgPath = "project_210404\\src\\calendar\\";
+	String imgPath = "../project_210419/src/calendar/";
 	   ImageIcon imgIcon = new ImageIcon(imgPath + "signUp.png");
 	   Image img = imgIcon.getImage();
 	   Image changeImg = img.getScaledInstance(400, 700, Image.SCALE_SMOOTH);
@@ -224,7 +224,7 @@ public class CreateAccount extends JFrame implements ActionListener, ItemListene
 		this.setVisible(true);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	
 	}
 
@@ -254,12 +254,15 @@ public class CreateAccount extends JFrame implements ActionListener, ItemListene
 			caVO.setEmail(address);
 			caVO.setGender(sex);
 			///////////////
-			cad.insert(caVO);
+			boolean notInsertSQL = cad.insert(caVO);
 			if("".equals(id) ||"".equals(pw) ||"".equals(dept) ||"".equals(name) ||"".equals(mailId) ||"".equals(mailIdTextField.getText())||"".equals(domainTextField.getText()) ) {
+				//공백 상태에서 로그인 버튼 누르면 에러 호출	
 				JOptionPane.showMessageDialog(null, "빈칸을 모두 작성해주세요.");
 				return;
-			} //공백 상태에서 로그인 버튼 누르면 에러 호출
-			else {
+			}else if(notInsertSQL == false) { //sql에 등록 실패하면 나옴.		
+				JOptionPane.showMessageDialog(null, "등록 실패 ㅠㅠ");
+				return;
+			}else {
 				JOptionPane.showMessageDialog(null, "등록되었습니다.");
 				super.dispose();
 			}

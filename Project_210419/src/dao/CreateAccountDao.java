@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CreateAccountDao  {
 	Connection con = null;
@@ -11,11 +12,12 @@ public class CreateAccountDao  {
 	ResultSet rs = null;
 	DBConnectionMgr dbMgr = null;
 	
-	public void insert(CreateAccountVO caVO){//오라클에  회원 정보를 넣는 부분
+	public boolean insert(CreateAccountVO caVO){//오라클에  회원 정보를 넣는 부분
+		boolean sql_insertcheck;
 		StringBuilder sql_insert = new StringBuilder();//sql문을 쓸 때 String보다는 StringBuilder가 싱글스레드에서 안전하게 작동함.
 		sql_insert.append("insert into"); //append()가 저 문자를 추가하겠다라는 의미임.
-		sql_insert.append(" account_info(member_code, id, pw, name, department, gender, email)"); //여기 적히는 문장이 sql에서 직접 적는 부분에 자동으로 입력됨.
-		sql_insert.append(" values(seq_member_code.NEXTVAL,?,?,?,?,?,?)"); //sequence 실행조건 nextval을 입력해야 초기값을 저장하기 시작하면서 구동됨.
+		sql_insert.append(" account_info(SELECT seq_member_code.NEXTVAL, ? , ? , ? , ? , ? , ? FROM dual"); //여기 적히는 문장이 sql에서 직접 적는 부분에 자동으로 입력됨.
+		sql_insert.append(" WHERE not exists(SELECT * FROM account_info WHERE id = ?)) "); //sequence 실행조건 nextval을 입력해야 초기값을 저장하기 시작하면서 구동됨.
 		dbMgr = DBConnectionMgr.getInstance(); //싱글톤 패턴으로 서버 연결은 이걸로 하면 연결에 필요한 데이터를 받음.
 		try {
 			con = dbMgr.getConnection(); //데이터를 통해서 sql연결
@@ -27,6 +29,7 @@ public class CreateAccountDao  {
 			pstmt.setString(i++, caVO.getDeptno());
 			pstmt.setString(i++, caVO.getGender());
 			pstmt.setString(i++, caVO.getEmail());
+			pstmt.setString(i++, caVO.getId());
 		} catch (SQLException se) {
 			System.out.println("[[sql_insert]]" +sql_insert); //쿼리 안되면 예외
 		} catch (Exception e) {
@@ -36,6 +39,8 @@ public class CreateAccountDao  {
 			int result = pstmt.executeUpdate(); //executeUpdate()는 영향을 받는 row(세로)줄을 숫자로 표시함. 예를 들어 추가 되면 1개의 로우가 반응되어 1의  값을 가짐. 실패하면 0을 받음.
 				if(result > 0) {
 					System.out.println("ok");
+					sql_insertcheck = true;
+					return sql_insertcheck;
 				}else {
 					System.out.println("최종 등록 실패");
 				}
@@ -44,6 +49,7 @@ public class CreateAccountDao  {
 		} finally {
 			dbMgr.freeConnection(con, pstmt); //사용한 건 자원 반납.
 		}
+		return false;
 	}
 	
 	public boolean overlapID(CreateAccountVO caVO) {
@@ -74,5 +80,6 @@ public class CreateAccountDao  {
 			dbMgr.freeConnection(con, pstmt, rs);
 		}
 		return false;
+		
 	} 
 }

@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 public class DBConnectionMgr {
 	private static final String _DRIVER = "oracle.jdbc.driver.OracleDriver";
-	private static final String _URL = "jdbc:oracle:thin:@192.168.0.15:1521:orcl11";
+	private static final String _URL = "jdbc:oracle:thin:@192.168.0.14:1521:orcl11";
 	private static final String _USER = "project";
 	private static final String _PW = "tiger";
     private static DBConnectionMgr dbMgr = null;
@@ -34,7 +34,7 @@ public class DBConnectionMgr {
          // TODO: handle exception
          System.out.println("드라이버 클래스를 찾을 수 없습니다.");
       } catch (Exception e) {
-         System.out.println("오라클 서버와 연결 실패!!!.");
+        e.printStackTrace();
       }
       return con;
    }

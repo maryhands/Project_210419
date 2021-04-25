@@ -2,18 +2,16 @@ package dao;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import javax.swing.JOptionPane;
-
-import calendar.Main80;
-import oracle.jdbc.OracleCallableStatement;
 public class LoginDao {
 	Connection con = null;
 	CallableStatement cstmt = null;
-	OracleCallableStatement ocstmt = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
 	DBConnectionMgr dbMgr = null;
-	
+
 	public String login(String p_id, String p_pw) {
 		String msg = ""; //밑에 3번을 받을 msg라는 변수를 선언
 		dbMgr = DBConnectionMgr.getInstance(); //싱글톤패턴으로 DB와 연동될 재료들 가져옴(ip, id, pw 등)
@@ -36,6 +34,32 @@ public class LoginDao {
 		} finally {
 			dbMgr.freeConnection(con, cstmt); //프로시저 사용한 것과 연결 정보등을 다시 반납함(일종의 종료)
 		} return(msg);//이 프로시저의 값은 msg의 값(프로시저에 저장된 논리의 값 - 다 맞으면 이름, id틀리면 "아이디가 존재하지 않습니다.", pw틀리면 "비밀번호가 다릅니다")을 가지게 된다. - 여기서는 다시 view로 넘겨줌(호출된게 거기뿐이라서)
+	}
+	
+	public String email(CreateAccountVO caVO) {
+		StringBuilder sql_email = new StringBuilder();
+		sql_email.append("SELECT email");
+		sql_email.append(" FROM account_info");		
+		sql_email.append(" WHERE id = ?");		
+		dbMgr = DBConnectionMgr.getInstance();
+		try {
+			con = dbMgr.getConnection();
+			pstmt = con.prepareStatement(sql_email.toString());
+			int i = 1;
+			pstmt.setString(i++, caVO.getId());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				String email = rs.getString("email");
+				return email;
+			}
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			dbMgr.freeConnection(con, pstmt, rs);
+		}
+		return null;
 	}
 	/*public static void main(String[] args) {
 		LoginDao ld = new LoginDao();

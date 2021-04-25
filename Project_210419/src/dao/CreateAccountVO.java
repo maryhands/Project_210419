@@ -2,7 +2,7 @@ package dao;
 
 public class CreateAccountVO {
 	//회원가입과 관련된 VO
-	private int member_num =  0;        
+	private int member_code =  0;        
 	private String id      =  "";
 	private String pw      =  "";
 	private String deptno  =  "";
@@ -10,11 +10,23 @@ public class CreateAccountVO {
 	private String email   =  "";
 	private String gender  =  "";
 	/////////////////////////////
-	public int getMember_num() {
-		return member_num;
+	
+	public CreateAccountVO() {}
+	
+	
+	public CreateAccountVO(String id, String deptno, String name, String email, String gender) {
+		this.id=id;
+		this.deptno=deptno;
+		this.name=name;
+		this.email=email;
+		this.gender=gender;
 	}
-	public void setMember_num(int member_num) {
-		this.member_num = member_num;
+
+	public int getMember_num() {
+		return member_code;
+	}
+	public void setMember_num(int member_code) {
+		this.member_code = member_code;
 	}
 	public String getId() {
 		return id;
